@@ -5,7 +5,7 @@ from course.views import (
     CourseViewSet,
     LessonListCreateAPIView,
     LessonRetrieveUpdateDestroyAPIView,
-    PaymentListAPIView,
+    PaymentListAPIView
 )
 
 router = routers.DefaultRouter()
