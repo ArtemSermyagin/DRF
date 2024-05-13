@@ -5,6 +5,7 @@ from course.views import (
     CourseViewSet,
     LessonListCreateAPIView,
     LessonRetrieveUpdateDestroyAPIView,
+    PaymentListAPIView
 )
 
 router = routers.DefaultRouter()
@@ -18,4 +19,5 @@ urlpatterns = [
         LessonRetrieveUpdateDestroyAPIView.as_view(),
         name="lessons-detail",
     ),
+    path("payments/", PaymentListAPIView.as_view(), name='list_payments')
 ]
