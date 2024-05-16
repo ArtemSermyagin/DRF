@@ -21,3 +21,11 @@ class IsModerator(permissions.BasePermission):
         if request.META.get('REQUEST_METHOD') in ['POST', 'DELETE']:
             return False
         return request.user.groups.filter(name='Модератор').exists()
+
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj.owner:
+            return True
+        return False

@@ -1,27 +1,35 @@
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 
 from course.models import Course, Lesson
 from course.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
 from users.models import Payment
-from users.permissions import IsModerator
+from users.permissions import IsModerator, IsOwnerOrReadOnly
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated, IsModerator, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsModerator, ]
+    permission_classes = [IsAuthenticated, IsModerator, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsModerator, ]
+    permission_classes = [IsAuthenticated, IsModerator, IsOwnerOrReadOnly]
 
 
 class PaymentListAPIView(generics.ListAPIView):
