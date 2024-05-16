@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from course.models import Course, Lesson
 from course.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
 from users.models import Payment
+from users.permissions import IsModerator
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -14,11 +15,13 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsModerator, ]
 
 
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsModerator, ]
 
 
 class PaymentListAPIView(generics.ListAPIView):
