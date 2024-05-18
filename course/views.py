@@ -11,7 +11,13 @@ from users.permissions import IsModerator, IsOwnerOrReadOnly
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    permission_classes = [IsAuthenticated, IsModerator, IsOwnerOrReadOnly]
+
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            self.permission_classes = [IsAuthenticated, ~IsModerator | IsOwnerOrReadOnly]
+        else:
+            self.permission_classes = [IsAuthenticated, IsModerator | IsOwnerOrReadOnly]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -20,16 +26,27 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsAuthenticated, IsModerator, IsOwnerOrReadOnly]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAuthenticated, ~IsModerator]
+        else:
+            self.permission_classes = [IsAuthenticated, IsModerator | IsOwnerOrReadOnly]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsAuthenticated, IsModerator, IsOwnerOrReadOnly]
+
+    def get_permissions(self):
+        if self.request.method == 'DELETE':
+            self.permission_classes = [IsAuthenticated, ~IsModerator | IsOwnerOrReadOnly]
+        else:
+            self.permission_classes = [IsAuthenticated, IsModerator | IsOwnerOrReadOnly]
+        return super().get_permissions()
 
 
 class PaymentListAPIView(generics.ListAPIView):

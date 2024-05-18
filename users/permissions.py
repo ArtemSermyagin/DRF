@@ -18,8 +18,6 @@ class UserRightPermission(permissions.BasePermission):
 class IsModerator(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if request.META.get('REQUEST_METHOD') in ['POST', 'DELETE']:
-            return False
         return request.user.groups.filter(name='Модератор').exists()
 
 
