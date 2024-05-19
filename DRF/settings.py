@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'drf_yasg',
     "rest_framework",
     "rest_framework_simplejwt",
     "users",
@@ -134,4 +135,17 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+
+SWAGGER_SETTINGS = {
+    "DOC_EXPANSION": "list",
+    "SHOW_EXTENSIONS": True,
+    "USE_SESSION_AUTH": False,
+    "TAGS_SORTER": "alpha",
+    "OPERATIONS_SORTER": "method",
+    "DEFAULT_MODEL_RENDERING": "example",
+    "SECURITY_DEFINITIONS": {
+        "Authorization": {"type": "apiKey", "name": "Authorization", "in": "header"},
+    },
 }
