@@ -1,5 +1,9 @@
 from django.contrib import admin
-from users.models import User, Payment
+from users.models import (
+    User,
+    Payment,
+    Subscription
+)
 
 
 @admin.register(User)
@@ -12,3 +16,8 @@ class PaymentAdmin(admin.ModelAdmin):
     readonly_fields = (
         'date',
     )
+
+
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    pass

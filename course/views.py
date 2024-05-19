@@ -1,16 +1,21 @@
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from course.models import Course, Lesson
+from course.paginators import MyPagination
 from course.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
-from users.models import Payment
+from users.models import Payment, Subscription
 from users.permissions import IsModerator, IsOwnerOrReadOnly
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    pagination_class = MyPagination
 
     def get_permissions(self):
         if self.action in ['create', 'destroy']:
@@ -26,6 +31,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    pagination_class = MyPagination
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -74,3 +80,20 @@ class PaymentListAPIView(generics.ListAPIView):
                 })
             queryset = queryset.filter(method=payment_method)
         return queryset
+
+
+class SubscriptionCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        course_id = kwargs.get('pk')
+        course_item = get_object_or_404(Course, pk=course_id)
+        subs_item = Subscription.objects.filter(user=request.user, course=course_item)
+
+        if subs_item.exists():
+            subs_item[0].delete()
+            message = 'подписка удалена'
+        else:
+            Subscription.objects.create(user=request.user, course=course_item)
+            message = 'подписка добавлена'
+        return Response({"message": message})
