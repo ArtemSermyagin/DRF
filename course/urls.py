@@ -10,10 +10,10 @@ from course.views import (
 )
 
 router = routers.DefaultRouter()
-router.register(r"courses", CourseViewSet)
+router.register(r"courses", CourseViewSet, basename='courses')
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path("", include(router.urls), name="courses"),
     path("lessons/", LessonListCreateAPIView.as_view(), name="lessons-list"),
     path(
         "lessons/<int:pk>/",
