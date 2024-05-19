@@ -29,13 +29,14 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == 'POST':
-            self.permission_classes = [IsAuthenticated, ~IsModerator]
+            self.permission_classes = [IsAuthenticated, IsModerator]
         else:
             self.permission_classes = [IsAuthenticated, IsModerator | IsOwnerOrReadOnly]
         return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
 
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
