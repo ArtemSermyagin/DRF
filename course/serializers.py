@@ -2,7 +2,19 @@ from rest_framework import serializers
 
 from course.models import Course, Lesson
 from course.validators import validate_lesson_url
-from users.models import Payment, Subscription
+from users.models import Payment, Subscription, User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+            'username',
+            'email'
+        )
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -14,6 +26,8 @@ class LessonSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Payment
         fields = "__all__"

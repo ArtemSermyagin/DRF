@@ -1,10 +1,12 @@
-from rest_framework import generics, viewsets
+from django.urls import reverse
+from rest_framework import generics, viewsets, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from DRF.settings import strip_client
 from course.models import Course, Lesson
 from course.paginators import MyPagination
 from course.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
@@ -56,8 +58,34 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         return super().get_permissions()
 
 
-class PaymentListAPIView(generics.ListAPIView):
+class PaymentListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payment = serializer.save(user=self.request.user)
+
+        if payment.method == Payment.translation:
+            product_name = payment.course.name if getattr(payment, 'course') else payment.lesson.name
+            product = strip_client.create_product(
+                url='https://api.stripe.com/v1/products',
+                name=product_name,
+            )
+            price = strip_client.create_price(
+                url='https://api.stripe.com/v1/prices',
+                name=product_name,
+                price=payment.amount
+            )
+            session = strip_client.create_session(
+                url='https://api.stripe.com/v1/checkout/sessions',
+                price_id=price['id'],
+                success_url=request.build_absolute_uri(reverse('courses-list'))
+            )
+            return Response({'url': session.get("url")}, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         sort = self.request.GET.get('sort')

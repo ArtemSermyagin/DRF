@@ -4,6 +4,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from course.service import StripeServiceClient
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -137,7 +139,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
-
 SWAGGER_SETTINGS = {
     "DOC_EXPANSION": "list",
     "SHOW_EXTENSIONS": True,
@@ -149,3 +150,6 @@ SWAGGER_SETTINGS = {
         "Authorization": {"type": "apiKey", "name": "Authorization", "in": "header"},
     },
 }
+
+STRIP_API_KET = os.getenv("STRIP_API_KET")
+strip_client = StripeServiceClient(STRIP_API_KET)
