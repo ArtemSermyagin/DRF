@@ -154,3 +154,9 @@ SWAGGER_SETTINGS = {
 
 STRIP_API_KET = os.getenv("STRIP_API_KET")
 strip_client = StripeServiceClient(STRIP_API_KET)
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL") or "redis://localhost:6379"
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND") or "redis://localhost:6379"
+CELERY_TIMEZONE = "Australia/Tasmania"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
