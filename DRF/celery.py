@@ -8,12 +8,12 @@ app = Celery("DRF")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
-# app.conf.beat_schedule = {
-#     "update_rating_themes": {
-#         "task": "api.tasks.theme.tasks.zeroing_rating_themes",
-#         "schedule": crontab(
-#             minute=0,
-#             hour=0,
-#         ),
-#     },
-# }
+app.conf.beat_schedule = {
+    "update_rating_themes": {
+        "task": "course.tasks.block_inactive_users",
+        "schedule": crontab(
+            minute='0',
+            hour='0',
+        ),
+    },
+}
