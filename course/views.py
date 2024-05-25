@@ -10,7 +10,6 @@ from rest_framework.views import APIView
 
 from DRF.settings import strip_client
 from course.docs import SUBSCRIBE_VIEW_SCHEMA
-from course.filters import PaymentFilter
 from course.models import Course, Lesson
 from course.paginators import MyPagination
 from course.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
