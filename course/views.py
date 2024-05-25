@@ -71,23 +71,18 @@ class PaymentListCreateAPIView(generics.ListCreateAPIView):
 
         if payment.method == Payment.translation:
             product_name = payment.course.name if getattr(payment, 'course') else payment.lesson.name
-            product = strip_client.create_product(
-                url='https://api.stripe.com/v1/products',
-                name=product_name,
-            )
+            product = strip_client.create_product(name=product_name)
             price = strip_client.create_price(
-                url='https://api.stripe.com/v1/prices',
                 name=product_name,
                 price=payment.amount
             )
             session = strip_client.create_session(
-                url='https://api.stripe.com/v1/checkout/sessions',
                 price_id=price['id'],
                 success_url=request.build_absolute_uri(reverse('courses-list'))
             )
             return Response({'url': session.get("url")}, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'url': reverse('courses-list')}, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         sort = self.request.GET.get('sort')
