@@ -1,4 +1,5 @@
 from django.urls import reverse
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, viewsets, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -7,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from DRF.settings import strip_client
+from course.docs import SUBSCRIBE_VIEW_SCHEMA
 from course.models import Course, Lesson
 from course.paginators import MyPagination
 from course.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
@@ -113,6 +115,7 @@ class PaymentListCreateAPIView(generics.ListCreateAPIView):
 class SubscriptionCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(**SUBSCRIBE_VIEW_SCHEMA)
     def post(self, request, *args, **kwargs):
         course_id = kwargs.get('pk')
         course_item = get_object_or_404(Course, pk=course_id)
