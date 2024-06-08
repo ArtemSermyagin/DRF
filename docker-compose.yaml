@@ -3,21 +3,20 @@ version: "3"
 services:
 
   redis:
-    image: redis:latest
-    restart: on-failure
-    expose:
-      - "6379"
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
 
 
   db:
-    image: drf
+    image: postgres:14
     restart: on-failure
     env_file:
       - .env
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     volumes:
-      - pg_data:var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data/
     healthcheck:
       test: ["CMD-SHELL", "-c", "pg_isready -U $POSTGRES_USER"]
       interval: 10s
@@ -41,7 +40,7 @@ services:
   celery:
     build: .
     tty: true
-    command: celery -A config worker -l INFO
+    command: celery -A DRF worker -l INFO
     depends_on:
       - redis
       - app
@@ -49,7 +48,7 @@ services:
   celery_beat:
     build: .
     tty: true
-    command: celery -A config beat -l INFO -S django
+    command: celery -A DRF beat -l INFO
     depends_on:
       - redis
       - app
