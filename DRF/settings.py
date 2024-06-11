@@ -148,7 +148,7 @@ SWAGGER_SETTINGS = {
     "OPERATIONS_SORTER": "method",
     "DEFAULT_MODEL_RENDERING": "example",
     "SECURITY_DEFINITIONS": {
-        "Authorization": {"type": "apiKey", "name": "Authorization", "in": "header"},
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"},
     },
 }
 
